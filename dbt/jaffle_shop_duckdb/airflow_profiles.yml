@@ -1,0 +1,11 @@
+# Airflow DuckDB Profile Configuration
+# This profile ensures each DAG run gets a unique database to prevent lock conflicts
+
+airflow_duckdb:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '{{ env_var("DUCKDB_DATABASE_PATH", "/usr/local/airflow/include/jaffle_shop.duckdb") }}'  # Use the same database file everywhere
+      schema: main
+      threads: 1  # Single thread to prevent conflicts
