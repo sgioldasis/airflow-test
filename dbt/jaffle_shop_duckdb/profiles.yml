@@ -1,0 +1,9 @@
+jaffle_shop:
+
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '{{ env_var("DUCKDB_DATABASE_PATH", "/usr/local/airflow/include/jaffle_shop.duckdb") }}'  # Use environment variable
+      schema: main
+      threads: 1  # Single thread to prevent conflicts
