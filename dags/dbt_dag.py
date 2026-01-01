@@ -35,11 +35,11 @@ _execution_config = ExecutionConfig(
 )
 
 my_dag = DbtDag(
-    dag_id="my_dag",
+    dag_id="dbt_dag",
     project_config=_project_config,
     profile_config=_profile_config,
     execution_config=_execution_config,
-    schedule="@daily",
+    schedule=None,  # Manual triggering only
     start_date=datetime(2025,1,1),
     max_active_runs=1,
     # Add concurrency control to prevent multiple tasks from running simultaneously
@@ -47,6 +47,7 @@ my_dag = DbtDag(
     # Run seeds first, then models, then tests
     render_config=RenderConfig(
         select=["*"],  # Select all dbt nodes
-        test_behavior="after_all"  # Run tests after all models complete
+        test_behavior="after_all",  # Run tests after all models complete
+        emit_datasets=True,        # Emit dataset events for asset-aware scheduling
     )
 )
