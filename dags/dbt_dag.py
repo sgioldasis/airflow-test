@@ -1,4 +1,5 @@
 from cosmos import ProjectConfig, ProfileConfig, ExecutionConfig, DbtDag, RenderConfig
+from airflow.sdk import Asset
 from cosmos.profiles import DuckDBUserPasswordProfileMapping
 import os
 from datetime import datetime
@@ -39,7 +40,13 @@ my_dag = DbtDag(
     project_config=_project_config,
     profile_config=_profile_config,
     execution_config=_execution_config,
-    schedule=None,  # Manual triggering only
+    schedule=[
+        Asset("duckdb://main.raw_customers"),
+        Asset("duckdb://main.raw_payments"),
+        Asset("duckdb://main.raw_orders")
+    ],
+    # Ensure the DAG runs when any of the scheduled assets are updated
+    catchup=False,
     start_date=datetime(2025,1,1),
     max_active_runs=1,
     # Add concurrency control to prevent multiple tasks from running simultaneously
@@ -51,3 +58,9 @@ my_dag = DbtDag(
         emit_datasets=True,        # Emit dataset events for asset-aware scheduling
     )
 )
+
+# Debug: Print the scheduled assets
+print(f"dbt_dag scheduled to run on assets: {[str(asset) for asset in my_dag.schedule]}")
+
+# Debug: Print the scheduled assets
+print(f"dbt_dag scheduled to run on assets: {[str(asset) for asset in my_dag.schedule]}")
